@@ -11,6 +11,15 @@
 
 FlareSolverr is a proxy server to bypass Cloudflare and DDoS-GUARD protection.
 
+## What added in this fork
+`{
+  "cmd": "request.get",
+  "url": "https://example.com",
+  "maxTimeout": 60000,
+  "execJs": "var cb = arguments[0]; setTimeout(function(){ cb(document.title); }, 2000);",
+  "execJsAsync": true
+}`
+
 ## How it works
 
 FlareSolverr starts a proxy server, and it waits for user requests in an idle state using few resources.
@@ -347,4 +356,3 @@ to the file name of one of the adapters inside the `/captcha` directory.
 ## Related projects
 
 - C# implementation => https://github.com/FlareSolverr/FlareSolverrSharp
-

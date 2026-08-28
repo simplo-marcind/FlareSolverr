@@ -266,7 +266,7 @@ def click_verify(driver: WebDriver, num_tabs: int = 1):
             actions.send_keys(Keys.TAB).pause(0.1)
         actions.pause(1)
         actions.send_keys(Keys.SPACE).perform()
-        
+
         logging.debug(f"Cloudflare verify checkbox clicked after {num_tabs} tabs!")
     except Exception:
         logging.debug("Cloudflare verify checkbox not found on the page.")
@@ -300,7 +300,7 @@ def _get_turnstile_token(driver: WebDriver, tabs: int):
             if turnstile_token != current_value:
                 logging.info(f"Turnstile token: {turnstile_token}")
                 return turnstile_token
-        logging.debug(f"Failed to extract token possibly click failed")        
+        logging.debug(f"Failed to extract token possibly click failed")
 
         # reset focus
         driver.execute_script("""
@@ -327,7 +327,7 @@ def _resolve_turnstile_captcha(req: V1RequestBase, driver: WebDriver):
 
         turnstile_challenge_found = False
         for selector in TURNSTILE_SELECTORS:
-            found_elements = driver.find_elements(By.CSS_SELECTOR, selector)   
+            found_elements = driver.find_elements(By.CSS_SELECTOR, selector)
             if len(found_elements) > 0:
                 turnstile_challenge_found = True
                 logging.info("Turnstile challenge detected. Selector found: " + selector)
@@ -477,6 +477,19 @@ def _evil_logic(req: V1RequestBase, driver: WebDriver, method: str) -> Challenge
 
     if not req.returnOnlyCookies:
         challenge_res.headers = {}  # todo: fix, selenium not provides this info
+
+        if req.execJs:
+            logging.info("Exec JS (async=" + str(bool(req.execJsAsync)) + "): " + str(req.execJs))
+            try:
+                if req.execJsAsync:
+                    js_result = driver.execute_async_script(req.execJs)
+                else:
+                    js_result = driver.execute_script(req.execJs)
+                challenge_res.jsResult = js_result
+                logging.debug("JS result: " + str(js_result))
+            except Exception as e:
+                logging.warning("Error executing JS: " + str(e))
+                challenge_res.jsResult = None
 
         if req.waitInSeconds and req.waitInSeconds > 0:
             logging.info("Waiting " + str(req.waitInSeconds) + " seconds before returning the response...")
