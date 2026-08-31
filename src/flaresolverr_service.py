@@ -413,22 +413,24 @@ def _evil_logic(req: V1RequestBase, driver: WebDriver, method: str) -> Challenge
 
     # find challenge by title
     challenge_found = False
-    for title in CHALLENGE_TITLES:
-        if title.lower() == page_title.lower():
-            challenge_found = True
-            logging.info("Challenge detected. Title found: " + page_title)
-            break
-    if not challenge_found:
-        # find challenge by selectors
-        for selector in CHALLENGE_SELECTORS:
-            found_elements = driver.find_elements(By.CSS_SELECTOR, selector)
-            if len(found_elements) > 0:
+    if not req.execJs:
+        for title in CHALLENGE_TITLES:
+            if title.lower() == page_title.lower():
                 challenge_found = True
-                logging.info("Challenge detected. Selector found: " + selector)
+                logging.info("Challenge detected. Title found: " + page_title)
                 break
-
+        if not challenge_found:
+            # find challenge by selectors
+            for selector in CHALLENGE_SELECTORS:
+                found_elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                if len(found_elements) > 0:
+                    challenge_found = True
+                    logging.info("Challenge detected. Selector found: " + selector)
+                    break
+    
     browser_wait_timeout = utils.get_config_browser_wait_timeout()
     attempt = 0
+    
     if challenge_found:
         while True:
             try:
@@ -468,7 +470,8 @@ def _evil_logic(req: V1RequestBase, driver: WebDriver, method: str) -> Challenge
     else:
         logging.info("Challenge not detected!")
         res.message = "Challenge not detected!"
-
+    
+    res.message = "Challenge not detected!"
     challenge_res = ChallengeResolutionResultT({})
     challenge_res.url = driver.current_url
     challenge_res.status = 200  # todo: fix, selenium not provides this info
