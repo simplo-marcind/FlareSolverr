@@ -12,13 +12,17 @@
 FlareSolverr is a proxy server to bypass Cloudflare and DDoS-GUARD protection.
 
 ## What added in this fork
-`{
+```
+{
   "cmd": "request.get",
   "url": "https://example.com",
   "maxTimeout": 60000,
   "execJs": "var cb = arguments[0]; setTimeout(function(){ cb(document.title); }, 2000);",
   "execJsAsync": true
-}`
+}
+```
+
+Env USER_AGENT
 
 ## How it works
 
